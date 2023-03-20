@@ -1,0 +1,10 @@
+teste(){
+    int i, a, b;
+    if(0 == 1 || true == false && a > b){
+        print("teste");
+        input(a, b);
+    }
+    bool c;
+}
+
+main(){}

@@ -1,0 +1,35 @@
+teste(){}
+testeoi(){}
+
+int teste2(){
+    return "oi";
+}
+
+real teste3(){
+    return 1;
+}
+
+bool teste4(){
+    return 10.0;
+}
+
+String teste5(){
+    teste4();
+    return 0;
+}
+
+funcaoComParametros(int a, real b){
+    int c;
+    c = 1;
+    c = (a + b * c);
+
+    bool d, e, f;
+
+    d = e || f;
+    d = d && e || f;
+
+    teste5();
+}
+
+
+main(){}

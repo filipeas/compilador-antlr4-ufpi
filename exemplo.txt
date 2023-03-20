@@ -1,0 +1,46 @@
+int numero;
+
+int fatorial(int fat){
+    if (fat > 1){
+        //print(fat);
+        return fat * fatorial(fat - 1);
+    }else{
+        return 1;
+    }
+}
+
+mostrarMedia(real v1, real v2, real x){
+    x = (v1 + v2) / 2;
+    print("Resultado: ", x);
+}
+
+real media (real n1, real n2) {
+    real m;
+    m = (n1 + n2)/2;
+    return m;
+}
+
+main(){
+    real n1, n2;
+    real x;
+
+    print("Programa Fatorial. Digite o numero?");
+    input(numero);
+    print(fatorial(numero));
+
+    print("Programa media. Digite os valores?");
+    input(n1, n2);
+    mostrarMedia(n1, n2, x);
+
+    print("Programa media v2. Digite os valores?");
+    input(n1, n2);
+    print("media calculada", media(n1, n2));
+
+    /*
+    int i;
+    while(i < 10){
+        print("entrou no while\n");
+        i = i + 1;
+    }
+    */
+}

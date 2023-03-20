@@ -1,0 +1,21 @@
+int a;
+const int x = 1;
+const String b = "oi";
+
+local(){
+    int b, c, i, max;
+    print(a, x, b, c);
+
+    for(i = 0; i < max; i = i + 2){
+        if(0 > 8){
+            print("teste");
+            break;
+        }
+    }
+}
+
+local2(int a, int b){
+    print(a, b, x);
+}
+
+main(){}

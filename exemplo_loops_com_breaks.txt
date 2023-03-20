@@ -1,0 +1,11 @@
+teste(){
+    int i, j;
+    while(i < 1){
+        break;
+    }
+
+    for (j = 0; j < 10; j = j + 1){
+        break;
+    }
+}
+main(){}
