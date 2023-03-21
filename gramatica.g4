@@ -31,7 +31,7 @@ declaraFuncoes:
       TIPO* ID '(' (TIPO ID (',' TIPO ID)*)? ')' '{' bloco '}' #funcao_com_tipo_e_vazio;
 
 funcao_for returns [idx]
-    : 'for' '(' ID '=' INT ';' expressao ';' incremento ')' '{' blocoFuncs funcao_break? '}';
+    : 'for' '(' ID '=' op=(INT | ID) ';' expressao ';' incremento ')' '{' blocoFuncs funcao_break? '}';
 incremento:
       ID '=' ID op=('+' | '-') INT
     ;

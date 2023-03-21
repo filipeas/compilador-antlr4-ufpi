@@ -192,7 +192,7 @@ class gramaticaListener(ParseTreeListener):
     # Enter a parse tree produced by gramaticaParser#funcao_for.
     def enterFuncao_for(self, ctx:gramaticaParser.Funcao_forContext):
         # verificando primeiro parametro do for
-        ctxId = ctx.ID().getText()
+        ctxId = ctx.ID(0).getText()
         # se variavel ja foi declarada, da erro
         if ctxId not in self.tabelaDeSimbolos:
             raise ErroVariavelNaoDeclarada(ctx.start.line, ctxId)
@@ -205,8 +205,14 @@ class gramaticaListener(ParseTreeListener):
         if ctxId != ctx.incremento().ID()[0].getText() or ctxId != ctx.incremento().ID()[1].getText():
             raise ErroTipoExpressaoDiferenteDeIncremento(ctx.start.line)
 
-        ctxInt = ctx.INT()
-        self.jasmin.enter_for(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
+        if ctx.ID(1) == None:
+            ctxInt = ctx.INT()
+            # print(ctxInt, self.tabelaDeSimbolos)
+            self.jasmin.enter_for_com_valor(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
+        else:
+            ctxInt = self.tabelaDeSimbolos[ctx.ID(1).getText()].address
+            # print(ctxInt, self.tabelaDeSimbolos)
+            self.jasmin.enter_for(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
 
         ctx.stack_idx = len(self.blocoDePilha)
 
@@ -219,7 +225,7 @@ class gramaticaListener(ParseTreeListener):
         # desempilha flag loop para saber se saiu do loop
         self.blocoDePilha.pop()
 
-        ctxId = ctx.ID().getText()
+        ctxId = ctx.ID(0).getText()
 
         # print(ctxId)
         # print(ctx.expressao().val)
@@ -228,6 +234,8 @@ class gramaticaListener(ParseTreeListener):
         # print(ctx.incremento().op.text, ctx.incremento().INT())
         # print(ctx.funcao_break() == None)
 
+        # ctxInt = self.tabelaDeSimbolos[ctx.ID(1).getText()].address
+        # print(ctxInt, self.tabelaDeSimbolos)
         self.jasmin.exit_for(ctxId, ctx.expressao().val, ctx.incremento().op.text, ctx.incremento().INT(), self.controle_escopo)
         pass
 
@@ -250,6 +258,7 @@ class gramaticaListener(ParseTreeListener):
 
     # Exit a parse tree produced by gramaticaParser#operacao_or.
     def exitOperacao_or(self, ctx:gramaticaParser.Operacao_orContext):
+        print('or: ', ctx.expressao().getText(), ctx.termo().getText(), ctx.inh_type, ctx.termo().val)
         if ctx.expressao().type != 'bool':
             raise ErroTipoExpressao(ctx.start.line, '||', ctx.expressao().type)
         elif ctx.termo().type != 'bool':
@@ -261,7 +270,9 @@ class gramaticaListener(ParseTreeListener):
         self.controle_endereco_novo += 1
 
         if ctx.inh_type == 'while':
-            self.jasmin.write_inh(ctx.inh.format(ctx.val))
+            self.jasmin.write_inh(ctx.inh.format(ctx.termo().val + 1))
+        elif ctx.inh_type == 'if':
+            ctx.end_label = self.jasmin.enter_if(ctx.termo().val + 1)
         pass
 
 
@@ -625,6 +636,7 @@ class gramaticaListener(ParseTreeListener):
 
     # Exit a parse tree produced by gramaticaParser#funcao_if.
     def exitFuncao_if(self, ctx:gramaticaParser.Funcao_ifContext):
+        print('entrou no if: ', ctx.expressao().getText(), ctx.expressao().type)
         if ctx.expressao().type != 'bool':
             raise ErroTipoInesperado(ctx.start.line, 'bool', ctx.expressao().type)
         if ctx.funcao_else() != None:

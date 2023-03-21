@@ -1,10 +1,32 @@
-teste(){
-    int i, a, b;
-    if(0 == 1 || true == false && a > b){
-        print("teste");
-        input(a, b);
-    }
-    bool c;
-}
+main(){
+    int i, j, a;
 
-main(){}
+    print("lanca 2 valor pra nois:");
+    input(i, j);
+
+    a = i + j * 7;
+
+    if (i < j){
+        print("xablau\n");
+    }else{
+        print("n entrou\n");
+    }
+
+    if (a > i || a > j){
+        print("entrou aq\n");
+    }else{
+        print("oloco meu\n");
+    }
+
+    for (i = 0; i < 10; i = i + 1){
+        print("segura muleq\n");
+    }
+
+    i = 0;
+    j = 0;
+    while(i < 10 || j < 10){
+        print("xama\n");
+        i = i + 2;
+        j = j + 1;
+    }
+}

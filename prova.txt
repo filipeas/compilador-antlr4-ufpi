@@ -1,0 +1,24 @@
+main(){
+    int INI, FIM, i, j;
+
+    print("Digite os valores INI e FIM (inteiros):");
+    input(INI, FIM);
+
+    if (INI >= FIM){
+        print("Voce deve digitar FIM maior que INI");
+    }
+    else{
+        if (INI < 0 && FIM < 0){
+            print("INI e FIM EH NEGATIVO");
+        }else {
+            for(i = INI; i < FIM; i = i + 1){
+                j = i / 4;
+
+                if (j * 4 == i){
+                    print("eh multiplo: ", i);
+                    print("\n");
+                }
+            }
+        }
+    }
+}

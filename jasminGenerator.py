@@ -550,6 +550,23 @@ class Generator:
         variable = self.tabela_simbolo[id]
 
         if controle_escopo:
+            # local // ldc {}
+            self.__write(
+                """
+                iload {}
+                istore {}
+                test_for{}:
+                {}
+                """.format(val, variable.address, variable.address,
+                           "goto exit_for_{}".format(variable.address) if temBreak else '')
+            )
+
+        # return "for{}:\n goto test_for{}\n enter_for{}:\n".format(loop_idx, loop_idx, loop_idx)
+
+    def enter_for_com_valor(self, val, id, temBreak, controle_escopo):
+        variable = self.tabela_simbolo[id]
+
+        if controle_escopo:
             # local
             self.__write(
                 """

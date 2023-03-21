@@ -1,11 +1,9 @@
-teste(){
-    int i, j;
-    while(i < 1){
-        break;
-    }
+main(){
+    int i, val;
+    print("lanca o val ai patrao: ");
+    input(val);
 
-    for (j = 0; j < 10; j = j + 1){
-        break;
+    for (i = val; i < 10; i = i + 1){
+        print("oi\n");
     }
 }
-main(){}
