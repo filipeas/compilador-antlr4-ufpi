@@ -23,8 +23,8 @@ real media (real n1, real n2) {
 
 main(){
     real v1, v2;
-    int i;
-    const int MIN = 0;
+    /*int i;
+    const int MIN = 0;*/
 
     print("Programa Fatorial. Digite o numero?");
     input(numero);
@@ -37,7 +37,7 @@ main(){
     print("Programa media v2. Digite os valores?");
     input(v1, v2);
     print("media calculada", media(v1, v2));
-
+/*
     if(true || false){
         print("entrou no ||\n");
     }else{
@@ -59,4 +59,5 @@ main(){
         print("entrou no while\n");
         i = i + 1;
     }
+    */
 }

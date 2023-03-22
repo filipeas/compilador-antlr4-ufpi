@@ -4,7 +4,7 @@ if __name__ is not None and "." in __name__:
     from gen.gramaticaParser import gramaticaParser
 else:
     from gen.gramaticaParser import gramaticaParser
-from jasminGenerator import Generator, Id
+from jasmin import Jasmin, Id
 from Erros import ErroTipoIncompativelDecl, ErroTipoInesperado, ErroTipoNaoInformado, ErroBreak, ErroDeclaracaoJaFeita, \
     ErroVariavelNaoDeclarada, ErroTipoExpressao, ErroTipoExpressaoDiferenteDeIncremento, ErroRetorno, \
     ErroDuplaExpressao, ErroArgumentoEsperado, ErroDeclaracaoDepoisDoBloco
@@ -35,7 +35,7 @@ class gramaticaListener(ParseTreeListener):
     controleCalculoExpr = False
 
     def __init__(self, filename):
-        self.jasmin = Generator(filename, self.tabelaDeSimbolos)
+        self.jasmin = Jasmin(filename, self.tabelaDeSimbolos)
         self.label_id = 0
 
     # Enter a parse tree produced by gramaticaParser#prog.
@@ -51,14 +51,14 @@ class gramaticaListener(ParseTreeListener):
 
     # Enter a parse tree produced by gramaticaParser#main.
     def enterMain(self, ctx:gramaticaParser.MainContext):
-        self.jasmin.enter_main()
+        self.jasmin.criaMain()
         self.controle_escopo = True
         self.blocoDePilha.append('function')
         pass
 
     # Exit a parse tree produced by gramaticaParser#main.
     def exitMain(self, ctx:gramaticaParser.MainContext):
-        self.jasmin.exit_main()
+        self.jasmin.fechaMain()
         self.blocoDePilha.pop()
         self.controle_escopo = False
         pass
@@ -180,7 +180,7 @@ class gramaticaListener(ParseTreeListener):
             argsNames.append(id.getText())
 
         self.argumentoDeFuncoes[functionId] = args
-        self.jasmin.enter_function(functionId, argsNames)
+        self.jasmin.criaFuncao(functionId, argsNames)
 
         # se a funcao tem retorno de tipo entao deve verificar se tem funcao de retorno no bloco
         if len(ctx.ID()) <= len(ctx.TIPO()):
@@ -195,7 +195,7 @@ class gramaticaListener(ParseTreeListener):
         if len(self.blocoRetorno) > 0:
             raise ErroRetorno(ctx.start.line)
 
-        self.jasmin.exit_function()
+        self.jasmin.fechaFuncao()
 
         self.blocoDePilha.pop()
 
@@ -291,7 +291,7 @@ class gramaticaListener(ParseTreeListener):
         else:
             ctx.type = 'bool'
 
-        ctx.val = self.jasmin.calc_or(ctx.expressao().val, ctx.termo().val, self.controle_endereco_novo)
+        ctx.val = self.jasmin.calcOr(ctx.expressao().val, ctx.termo().val, self.controle_endereco_novo)
         self.controle_endereco_novo += 1
 
         if ctx.inh_type == 'while':
@@ -332,7 +332,7 @@ class gramaticaListener(ParseTreeListener):
         else:
             ctx.type = 'bool'
 
-        ctx.val = self.jasmin.calc_and(ctx.termo().val, ctx.termo2().val, self.controle_endereco_novo)
+        ctx.val = self.jasmin.calcAnd(ctx.termo().val, ctx.termo2().val, self.controle_endereco_novo)
         self.controle_endereco_novo += 1
         pass
 
@@ -364,7 +364,7 @@ class gramaticaListener(ParseTreeListener):
             raise ErroTipoExpressao(ctx.start.line, ctx.op.text, termo2Type, termo3Type)
 
         ctx.type = 'bool'
-        ctx.val = self.jasmin.calc_eq(termo2Type, termo2Val, termo3Val, self.controle_endereco_novo, ctx.op.text)
+        ctx.val = self.jasmin.calcIgualdade(termo2Type, termo2Val, termo3Val, self.controle_endereco_novo, ctx.op.text)
         self.controle_endereco_novo += 1
         pass
 
@@ -407,7 +407,7 @@ class gramaticaListener(ParseTreeListener):
             raise ErroTipoExpressao(ctx.start.line, ctx.op.text, termo3Type, termo4Type)
 
         ctx.type = 'bool'
-        ctx.val = self.jasmin.calc_eq(termo3Type, termo3Val, termo4Val, self.controle_endereco_novo, ctx.op.text)
+        ctx.val = self.jasmin.calcIgualdade(termo3Type, termo3Val, termo4Val, self.controle_endereco_novo, ctx.op.text)
         self.controle_endereco_novo += 1
         pass
 
@@ -444,7 +444,7 @@ class gramaticaListener(ParseTreeListener):
             else:
                 raise ErroTipoExpressao(ctx.start.line, ctx.op.text, ctx.termo6().type)
 
-            ctx.val = self.jasmin.calc_minus(ctx.termo6().type, ctx.termo6().val, self.controle_endereco_novo)
+            ctx.val = self.jasmin.calcSub(ctx.termo6().type, ctx.termo6().val, self.controle_endereco_novo)
             self.controle_endereco_novo += 1
         elif ctx.op.text == '!':
             if ctx.termo6().type == 'bool':
@@ -452,7 +452,7 @@ class gramaticaListener(ParseTreeListener):
             else:
                 raise ErroTipoExpressao(ctx.start.line, ctx.op.text, ctx.termo6().type)
 
-            ctx.val = self.jasmin.calc_not(ctx.termo6().val, self.controle_endereco_novo)
+            ctx.val = self.jasmin.calcNot(ctx.termo6().val, self.controle_endereco_novo)
             self.controle_endereco_novo += 1
         pass
 
@@ -780,7 +780,7 @@ class gramaticaListener(ParseTreeListener):
         for exp in ctx.expressao():
             args.append(exp.val)
             types.append(exp.type)
-        ctx.val = self.jasmin.function_call(functionId, args, types)
+        ctx.val = self.jasmin.criaChamadaDeFuncao(functionId, args, types)
         pass
 
 
@@ -798,7 +798,7 @@ class gramaticaListener(ParseTreeListener):
         if self.blocoRetorno[0] != ctx.expressao().type:
             raise ErroTipoInesperado(ctx.start.line, self.blocoRetorno[0], ctx.expressao().type)
 
-        self.jasmin.do_return(ctx.expressao().val, self.blocoRetorno[0])
+        self.jasmin.criaFuncaoReturn(ctx.expressao().val, self.blocoRetorno[0])
         pass
 
 
