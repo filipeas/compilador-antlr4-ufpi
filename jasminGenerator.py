@@ -354,7 +354,7 @@ class Generator:
     def load_var(self, var, controle_escopo, addr):
         var_data = self.tabela_simbolo[var]
 
-        if controle_escopo:
+        if var_data.scope:
             if var_data.type == 'int' or var_data.type == 'bool':
                 self.__write(
                     """
@@ -377,14 +377,14 @@ class Generator:
             self.__write(
                 """
                 getstatic {}/{} {}
-                """.format(self.name, var, type_convert(var_data.type))
+                """.format(self.nome_arquivo, var, type_convert(var_data.type))
             )
         return self.store_val(var_data.type, addr)
 
     def store_var(self, var, val, address, controle_escopo):
         var_data = self.getVar(var, controle_escopo)
 
-        if controle_escopo:
+        if var_data.scope:
             if var_data.type == 'int' or var_data.type == 'bool':
                 self.__write(
                     """
@@ -407,15 +407,15 @@ class Generator:
                     """.format(val, address)
                 )
         else:
-            self.load_temp(address, var_data.type)
+            self.load_temp(val, var_data.type)
             self.__write(
                 """
                 putstatic {}/{} {}
                 """.format(self.nome_arquivo, var, type_convert(var_data.type))
             )
 
-    def input(self, name, controle_escopo):
-        table = self.tabela_simbolo[name]
+    def input(self, var, controle_escopo):
+        table = self.tabela_simbolo[var]
         t = table.type
 
         self.__write(
@@ -450,9 +450,10 @@ class Generator:
                 invokevirtual java/util/Scanner/nextBoolean()Z
                 """.format(type_convert(table.type))
             )
+
         addr = self.store_val(table.type, table.address)
-        # table.address = addr
-        # self.store_var(name, table.address, controleTabelaFuncao)
+        if not table.scope:
+            self.store_var(var, table.address, None, None)
 
     def add(self, type, addr1, addr2, addr3):
         self.load_temp(addr1, type)

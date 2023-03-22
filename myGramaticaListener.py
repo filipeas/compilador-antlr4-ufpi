@@ -15,6 +15,7 @@ class gramaticaListener(ParseTreeListener):
 
     # tabela de simbolos // refatorar: usar só uma, se nao da problema no gerador
     tabelaDeSimbolos = {}
+    tabelaDeSimbolos_copy = {}
 
     # bloco de pilha
     blocoDePilha = []
@@ -88,8 +89,14 @@ class gramaticaListener(ParseTreeListener):
         for token in ctx.ID():
             if ctx.TIPO().getText() == '<missing <INVALID>>':
                 raise ErroTipoNaoInformado(ctx.start.line, token.getText())
+
+            # se variavel existe e esta no escopo local, da erro
             if token.getText() in self.tabelaDeSimbolos and self.tabelaDeSimbolos[token.getText()].scope == self.controle_escopo:
                 raise ErroDeclaracaoJaFeita(ctx.start.line, token.getText())
+
+            # se a variavel ja estiver em escopo global, guarda ela para recuperar na saida da funcao de escopo local
+            if token.getText() in self.tabelaDeSimbolos and self.tabelaDeSimbolos[token.getText()].scope == False:
+                self.tabelaDeSimbolos_copy[token.getText()] = self.tabelaDeSimbolos[token.getText()]
 
             self.tabelaDeSimbolos[token.getText()] = Id(type=ctx.TIPO().getText(), scope=self.controle_escopo, address=self.controle_endereco_novo)
             self.controle_endereco_novo += 1 # atualiza o proximo endereco disponivel
@@ -105,8 +112,13 @@ class gramaticaListener(ParseTreeListener):
         for key, token in enumerate(ctx.ID()):
             if ctx.TIPO().getText() == '<missing <INVALID>>':
                 raise ErroTipoNaoInformado(ctx.start.line, token.getText())
+
+            # se variavel existe e esta no escopo local, da erro
             if token.getText() in self.tabelaDeSimbolos and self.tabelaDeSimbolos[token.getText()].scope == self.controle_escopo:
                 raise ErroDeclaracaoJaFeita(ctx.start.line, token.getText())
+
+            if token.getText() in self.tabelaDeSimbolos and self.tabelaDeSimbolos[token.getText()].scope == False:
+                self.tabelaDeSimbolos_copy[token.getText()] = self.tabelaDeSimbolos[token.getText()]
 
             self.tabelaDeSimbolos[token.getText()] = Id(type=ctx.TIPO().getText(), scope=self.controle_escopo,
                                                         address=self.controle_endereco_novo)
@@ -154,8 +166,14 @@ class gramaticaListener(ParseTreeListener):
             lista = list(zip(ctx.ID()[1:], ctx.TIPO()[0:]))
 
         for id, tipo in lista:
+            # se variavel existe e esta no escopo local, da erro
             if id in self.tabelaDeSimbolos and self.tabelaDeSimbolos[id].scope == self.controle_escopo:
                 raise ErroDeclaracaoJaFeita(ctx.start.line, id.getText())
+
+            # se a variavel ja estiver em escopo global, guarda ela para recuperar na saida da funcao de escopo local
+            if id.getText() in self.tabelaDeSimbolos and self.tabelaDeSimbolos[id.getText()].scope == False:
+                self.tabelaDeSimbolos_copy[id.getText()] = self.tabelaDeSimbolos[id.getText()]
+
             self.tabelaDeSimbolos[id.getText()] = Id(type=tipo.getText(), scope=self.controle_escopo, address=self.controle_endereco_novo)
             self.controle_endereco_novo += 1
             args.append(tipo.getText())
@@ -184,6 +202,14 @@ class gramaticaListener(ParseTreeListener):
         for item in list(self.tabelaDeSimbolos):
             if self.tabelaDeSimbolos[item].scope:
                 del self.tabelaDeSimbolos[item]
+
+        for item in self.tabelaDeSimbolos_copy:
+            self.tabelaDeSimbolos[item] = self.tabelaDeSimbolos_copy[item]
+
+        # teste
+        for item in self.tabelaDeSimbolos:
+            print(item, ' => ', self.tabelaDeSimbolos[item].scope)
+        print('----------')
 
         self.controle_escopo = False
         pass
@@ -258,7 +284,6 @@ class gramaticaListener(ParseTreeListener):
 
     # Exit a parse tree produced by gramaticaParser#operacao_or.
     def exitOperacao_or(self, ctx:gramaticaParser.Operacao_orContext):
-        print('or: ', ctx.expressao().getText(), ctx.termo().getText(), ctx.inh_type, ctx.termo().val)
         if ctx.expressao().type != 'bool':
             raise ErroTipoExpressao(ctx.start.line, '||', ctx.expressao().type)
         elif ctx.termo().type != 'bool':
@@ -636,7 +661,6 @@ class gramaticaListener(ParseTreeListener):
 
     # Exit a parse tree produced by gramaticaParser#funcao_if.
     def exitFuncao_if(self, ctx:gramaticaParser.Funcao_ifContext):
-        print('entrou no if: ', ctx.expressao().getText(), ctx.expressao().type)
         if ctx.expressao().type != 'bool':
             raise ErroTipoInesperado(ctx.start.line, 'bool', ctx.expressao().type)
         if ctx.funcao_else() != None:
@@ -714,9 +738,20 @@ class gramaticaListener(ParseTreeListener):
         if self.controle_escopo:
             expected = variable.type
             received = ctx.expressao().type
+
+            # casting para que a variavel que vai receber use o tipo calculado da expressao
+            # o tipo calculado da expressao é baseado no tipo dos numeros da expressao, e nao é considerado os operadores
+            # ex: (2 + 2) / 2 vai ser expressao int, pq todos os numeros sao inteiros
+            # ex: (2 + 2) / 2.0 vai ser expressao real, pq pelo menos 1 numero é real
+            self.jasmin.tabela_simbolo[ctxId].type = ctx.expressao().type
+            if (expected == 'int' and received == 'real') or (expected == 'real' and received == 'int'):
+                expected = 'real'
+                received = 'real'
+
             if expected != received:
                 raise ErroTipoInesperado(ctx.start.line, expected, received)
-            self.jasmin.store_var(ctxId, ctxVal, variable.address, self.controle_endereco_novo)
+
+            self.jasmin.store_var(ctxId, ctxVal, variable.address, self.controle_escopo)
         pass
 
 

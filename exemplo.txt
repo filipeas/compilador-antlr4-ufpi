@@ -1,4 +1,5 @@
-int numero;
+int numero, n1, n2;
+real m;
 
 int fatorial(int fat){
     if (fat > 1){
@@ -9,7 +10,7 @@ int fatorial(int fat){
     }
 }
 
-mostrarMedia(real v1, real v2, real x){
+mostrarMedia(int v1, int v2, real x){
     x = (v1 + v2) / 2;
     print("Resultado: ", x);
 }
@@ -21,8 +22,9 @@ real media (real n1, real n2) {
 }
 
 main(){
-    real n1, n2;
-    real x;
+    real v1, v2;
+    int i;
+    const int MIN = 0;
 
     print("Programa Fatorial. Digite o numero?");
     input(numero);
@@ -30,17 +32,31 @@ main(){
 
     print("Programa media. Digite os valores?");
     input(n1, n2);
-    mostrarMedia(n1, n2, x);
+    mostrarMedia(n1, n2, m);
 
     print("Programa media v2. Digite os valores?");
-    input(n1, n2);
-    print("media calculada", media(n1, n2));
+    input(v1, v2);
+    print("media calculada", media(v1, v2));
 
-    /*
-    int i;
+    if(true || false){
+        print("entrou no ||\n");
+    }else{
+        print("oloco", n1, " ", n2, " ", m);
+    }
+
+    if (MIN < 10 && !true){
+        print("oloco\n");
+    }else{
+        print("oioioi\n\n")
+    }
+
+    for(i = MIN; i < 10; i = i + 1){
+        print("entrou no for\n");
+    }
+
+    i = 0;
     while(i < 10){
         print("entrou no while\n");
         i = i + 1;
     }
-    */
 }

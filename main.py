@@ -5,7 +5,7 @@ from gen.gramaticaParser import gramaticaParser
 from myGramaticaListener import gramaticaListener
 
 if __name__ == '__main__':
-    file = FileStream("exemplo_if_print_e_input.txt")
+    file = FileStream("exemplo.txt")
 
     # parte lexica
     lexer = gramaticaLexer(file)
