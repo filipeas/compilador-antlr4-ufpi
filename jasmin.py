@@ -25,6 +25,13 @@ class Jasmin:
         return variable
 
     """
+    funcao que pega o endereco alocado na tabela de simbolos
+    """
+    def getAddress(self, var, controleTabelaFuncao):
+        var_data = self.symbol_table_local[var] if controleTabelaFuncao else self.symbol_table[var]
+        return var_data.address
+
+    """
     funcao para iniciar a criacao de um metodo
     """
     def create(self, var_name, var_type, controle_escopo, const: False, val: 0):
@@ -287,6 +294,47 @@ class Jasmin:
         return self.store_val('bool', addr3)
 
     """
+    funcao que calcula soma
+    """
+    def add(self, type, addr1, addr2, addr3):
+        self.load_temp(addr1, type)
+        self.load_temp(addr2, type)
+        if type == 'int':
+            self.__write(
+                """
+                iadd
+                """
+            )
+        elif type == 'real':
+            self.__write(
+                """
+                fadd
+                """
+            )
+        # concatenar string (descobrir como concatena string)
+        return self.store_val(type, addr3)
+
+    """
+    funcao calcula subtracao
+    """
+    def sub(self, type, addr1, addr2, addr3):
+        self.load_temp(addr1, type)
+        self.load_temp(addr2, type)
+        if type == 'int':
+            self.__write(
+                """
+                isub
+                """
+            )
+        elif type == 'real':
+            self.__write(
+                """
+                fsub
+                """
+            )
+        return self.store_val(type, addr3)
+
+    """
     funcao que calcula subtracao
     """
     def calcSub(self, type, addr1, addr3):
@@ -508,41 +556,6 @@ class Jasmin:
         if not table.scope:
             self.store_var(var, table.address, None, None)
 
-    def add(self, type, addr1, addr2, addr3):
-        self.load_temp(addr1, type)
-        self.load_temp(addr2, type)
-        if type == 'int':
-            self.__write(
-                """
-                iadd
-                """
-            )
-        elif type == 'real':
-            self.__write(
-                """
-                fadd
-                """
-            )
-        # concatenar string (descobrir como concatena string)
-        return self.store_val(type, addr3)
-
-    def sub(self, type, addr1, addr2, addr3):
-        self.load_temp(addr1, type)
-        self.load_temp(addr2, type)
-        if type == 'int':
-            self.__write(
-                """
-                isub
-                """
-            )
-        elif type == 'real':
-            self.__write(
-                """
-                fsub
-                """
-            )
-        return self.store_val(type, addr3)
-
     def load_temp(self, val, type):
         if type == 'int' or type == 'bool':
             self.__write(
@@ -579,10 +592,6 @@ class Jasmin:
             """
         )
         return self.store_val("real", addr)
-
-    def getAddress(self, var, controleTabelaFuncao):
-        var_data = self.symbol_table_local[var] if controleTabelaFuncao else self.symbol_table[var]
-        return var_data.address
 
     def enter_while(self, loop_idx):
         self.__write(
