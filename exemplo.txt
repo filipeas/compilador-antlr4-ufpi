@@ -11,7 +11,10 @@ int fatorial(int fat){
 }
 
 mostrarMedia(int v1, int v2, real x){
-    x = (v1 + v2) / 2;
+    print(x, "\n");
+    //x = x + 10;
+    //print(x, "\n");
+    x = (v1 + v2) / 2.0;
     print("Resultado: ", x);
 }
 
@@ -23,8 +26,8 @@ real media (real n1, real n2) {
 
 main(){
     real v1, v2;
-    /*int i;
-    const int MIN = 0;*/
+    int i;
+    const int MIN = 0;
 
     print("Programa Fatorial. Digite o numero?");
     input(numero);
@@ -47,7 +50,7 @@ main(){
     if (MIN < 10 && !true){
         print("oloco\n");
     }else{
-        print("oioioi\n\n")
+        print("oioioi\n\n");
     }
 
     for(i = MIN; i < 10; i = i + 1){
@@ -59,5 +62,5 @@ main(){
         print("entrou no while\n");
         i = i + 1;
     }
-    */
+*/
 }

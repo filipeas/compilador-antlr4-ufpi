@@ -234,11 +234,11 @@ class gramaticaListener(ParseTreeListener):
         if ctx.ID(1) == None:
             ctxInt = ctx.INT()
             # print(ctxInt, self.tabelaDeSimbolos)
-            self.jasmin.enter_for_com_valor(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
+            self.jasmin.iniciaFor_com_valor(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
         else:
             ctxInt = self.tabelaDeSimbolos[ctx.ID(1).getText()].address
             # print(ctxInt, self.tabelaDeSimbolos)
-            self.jasmin.enter_for(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
+            self.jasmin.iniciaFor(ctxInt, ctxId, ctx.funcao_break() != None, self.controle_escopo)
 
         ctx.stack_idx = len(self.blocoDePilha)
 
@@ -636,7 +636,7 @@ class gramaticaListener(ParseTreeListener):
     # Enter a parse tree produced by gramaticaParser#funcao_while.
     def enterFuncao_while(self, ctx:gramaticaParser.Funcao_whileContext):
         ctx.expressao().inh_type = 'while'
-        ctx.expressao().inh = self.jasmin.enter_while(len(self.blocoDePilha))
+        ctx.expressao().inh = self.jasmin.iniciaWhile(len(self.blocoDePilha))
         self.controle_endereco_novo += 1
 
         # empilha flag loop para saber se entrou no loop

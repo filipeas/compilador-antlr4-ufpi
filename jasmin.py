@@ -87,9 +87,8 @@ class Jasmin:
                 )
 
     """
-        funcao para escrever no .j
-        """
-
+    funcao para escrever no .j
+    """
     def __write(self, string):
         for s in string.split('\n'):
             if s.strip():
@@ -593,7 +592,10 @@ class Jasmin:
         )
         return self.store_val("real", addr)
 
-    def enter_while(self, loop_idx):
+    """
+    funcao que inicia loop while
+    """
+    def iniciaWhile(self, loop_idx):
         self.__write(
             """
             enter_while{}:
@@ -601,6 +603,9 @@ class Jasmin:
         )
         return "iload {}\n" + "ldc 1\nif_icmpne break{}".format(loop_idx)
 
+    """
+    funcao que finaliza loop while
+    """
     def exit_while(self, loop_idx):
         self.__write(
             """
@@ -609,7 +614,10 @@ class Jasmin:
             """.format(loop_idx, loop_idx)
         )
 
-    def enter_for(self, val, id, temBreak, controle_escopo):
+    """
+    funcao for que inicializa com numero
+    """
+    def iniciaFor(self, val, id, temBreak, controle_escopo):
         variable = self.tabela_simbolo[id]
 
         if controle_escopo:
@@ -626,7 +634,11 @@ class Jasmin:
 
         # return "for{}:\n goto test_for{}\n enter_for{}:\n".format(loop_idx, loop_idx, loop_idx)
 
-    def enter_for_com_valor(self, val, id, temBreak, controle_escopo):
+
+    """
+    funcao que inicia for com variavel no inicializador
+    """
+    def iniciaFor_com_valor(self, val, id, temBreak, controle_escopo):
         variable = self.tabela_simbolo[id]
 
         if controle_escopo:
