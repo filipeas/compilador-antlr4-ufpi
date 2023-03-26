@@ -2,6 +2,8 @@
 
 Projeto de compilador simplificado, imitando sintaxe do Python.
 
+[Link para explicação resumida do trabalho e execução](https://www.youtube.com/watch?v=fsZEbm4PCI0)
+
 Essa versão foi feita para passar na disciplina de compiladores - UFPI, logo mais talvez eu coloque a versão real que estava fazendo (com Golang, escrevendo tudo do zero, sem bibliotecas!).
 
 ## Passos iniciais
